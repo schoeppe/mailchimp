@@ -1,0 +1,7 @@
+plugin.tx_mailchimp {
+  view {
+    templateRootPath = EXT:mailchimp/Resources/Private/Templates/
+    partialRootPath = EXT:mailchimp/Resources/Private/Partials/
+    layoutRootPath = EXT:mailchimp/Resources/Private/Layouts/
+  }
+}

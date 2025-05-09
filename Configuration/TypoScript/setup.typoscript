@@ -1,0 +1,27 @@
+plugin.tx_mailchimp {
+  view {
+    templateRootPaths {
+      0 = EXT:mailchimp/Resources/Private/Templates/
+      1 = {$plugin.tx_mailchimp.view.templateRootPath}
+    }
+
+    partialRootPaths {
+      0 = EXT:mailchimp/Resources/Private/Partials/
+      1 = {$plugin.tx_mailchimp.view.partialRootPath}
+    }
+
+    layoutRootPaths {
+      0 = EXT:mailchimp/Resources/Private/Layouts/
+      1 = {$plugin.tx_mailchimp.view.layoutRootPath}
+    }
+  }
+  settings {
+  }
+}
+
+tt_content.list.20.mailchimp_registration = USER
+tt_content.list.20.mailchimp_registration {
+  userFunc = TYPO3\CMS\Extbase\Core\Bootstrap->run
+  extensionName = Mailchimp
+  pluginName = Registration
+}
