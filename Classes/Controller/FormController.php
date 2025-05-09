@@ -2,13 +2,13 @@
 
 namespace Sup7even\Mailchimp\Controller;
 
+use Psr\Http\Message\ResponseInterface;
 use Sup7even\Mailchimp\Domain\Model\Dto\FormDto;
 use Sup7even\Mailchimp\Exception\GeneralException;
 use Sup7even\Mailchimp\Exception\MemberExistsException;
 use Sup7even\Mailchimp\Service\ApiService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Extbase\Mvc\Exception\StopActionException;
 
 class FormController extends ActionController
 {
@@ -17,7 +17,7 @@ class FormController extends ActionController
      * @param FormDto|null $form
      * @TYPO3\CMS\Extbase\Annotation\IgnoreValidation("form")
      */
-    public function indexAction(FormDto $form = null)
+    public function indexAction(FormDto $form = null): ResponseInterface
     {
         if ($form === null) {
             /** @var FormDto $form */
@@ -40,39 +40,44 @@ class FormController extends ActionController
             'interests' => $interests,
             'apiKey' => $apiService->getApiKey()
         ]);
+
+        return $this->htmlResponse();
     }
 
     /**
      * @param FormDto|null $form
      * @TYPO3\CMS\Extbase\Annotation\IgnoreValidation("form")
      */
-    public function ajaxResponseAction(FormDto $form = null)
+    public function ajaxResponseAction(FormDto $form = null): ResponseInterface
     {
         $this->handleRegistration($form);
+
+        return $this->jsonResponse();
     }
 
     /**
      * @param FormDto|null $form
-     * @throws StopActionException
      */
-    public function responseAction(FormDto $form = null)
+    public function responseAction(FormDto $form = null): ResponseInterface
     {
         if ($form === null) {
             $this->redirect('index');
         }
 
         $this->handleRegistration($form);
+
+        return $this->htmlResponse();
     }
 
-    protected function handleRegistration(FormDto $form = null)
+    protected function handleRegistration(FormDto $form = null): void
     {
-        $doublOptIn = true;
-        if (isset($this->settings['skipDoubleOptIn']) && $this->settings['skipDoubleOptIn'] == 1) {
-            $doublOptIn = false;
+        $doubleOptIn = true;
+        if (isset($this->settings['skipDoubleOptIn']) && $this->settings['skipDoubleOptIn'] === 1) {
+            $doubleOptIn = false;
         }
         try {
             $apiService = $this->getApiService($this->settings['apiKey'] ?? '');
-            $apiService->register($this->settings['listId'], $form, $doublOptIn);
+            $apiService->register($this->settings['listId'], $form, $doubleOptIn);
         } catch (MemberExistsException $e) {
             $this->view->assign('error', 'memberExists');
             $this->view->assign('exception', $e);
